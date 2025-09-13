@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>LeetCode Problems - Interview Prep</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-code"></i> LeetCode Problems - Interview Prep</h1>
+                <p class="subtitle">Curated collection of coding interview problems with company insights</p>
+                <div class="header-controls">
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle dark/light mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="problems">
+                <i class="fas fa-list"></i> Problems
+            </button>
+            <button class="nav-tab" data-tab="insights">
+                <i class="fas fa-lightbulb"></i> Tips & Insights
+            </button>
+        </nav>
+
+        <div class="tab-content" id="problems-tab">
+            <div class="main-layout">
+                <div class="sidebar-left">
+                    <div class="filters-section">
+                        <div class="filters-header">
+                            <h3><i class="fas fa-filter"></i> Filters</h3>
+                            <button id="clear-filters" class="btn-clear">
+                                <i class="fas fa-times" style="color: #dc3545;"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="filters-compact">
+                            <div class="filter-card compact">
+                                <label for="search"><i class="fas fa-search"></i> Search</label>
+                                <input type="text" id="search" placeholder="Search problems...">
+                            </div>
+                            
+                            <div class="filter-card compact">
+                                <label for="status-filter"><i class="fas fa-check-circle"></i> Status</label>
+                                <select id="status-filter">
+                                    <option value="">All</option>
+                                    <option value="solved">Solved</option>
+                                    <option value="unsolved">Not Solved</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-card compact">
+                                <label><i class="fas fa-signal"></i> Difficulty</label>
+                                <div class="difficulty-buttons">
+                                    <button type="button" class="difficulty-btn" data-difficulty="Easy">Easy</button>
+                                    <button type="button" class="difficulty-btn" data-difficulty="Medium">Med</button>
+                                    <button type="button" class="difficulty-btn" data-difficulty="Hard">Hard</button>
+                                </div>
+                            </div>
+
+                            <div class="filter-card compact">
+                                <label for="company-count-filter"><i class="fas fa-building"></i> Min Companies</label>
+                                <div class="range-container compact">
+                                    <input type="range" id="company-count-filter" min="1" max="50" value="1">
+                                    <span class="range-value" id="company-count-value">1+</span>
+                                </div>
+                            </div>
+
+                            <div class="filter-card compact">
+                                <label for="frequency-filter"><i class="fas fa-chart-line"></i> Min Frequency</label>
+                                <div class="range-container compact">
+                                    <input type="range" id="frequency-filter" min="0" max="10" step="0.1" value="0">
+                                    <span class="range-value" id="frequency-value">0+</span>
+                                </div>
+                            </div>
+
+                            <div class="filter-card compact">
+                                <label><i class="fas fa-tags"></i> Tags</label>
+                                <div class="multi-select-wrapper">
+                                    <div class="selected-items" id="selected-tags">
+                                        <span class="placeholder">Select tags...</span>
+                                    </div>
+                                    <div class="dropdown-content" id="tag-dropdown">
+                                        <!-- Tags will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter-card compact">
+                                <label><i class="fas fa-briefcase"></i> Companies</label>
+                                <div class="multi-select-wrapper">
+                                    <div class="selected-items" id="selected-companies">
+                                        <span class="placeholder">Select companies...</span>
+                                    </div>
+                                    <div class="dropdown-content" id="company-dropdown">
+                                        <!-- Companies will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="compact-stats">
+                        <h3><i class="fas fa-chart-bar"></i> Progress</h3>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="total-problems">0</div>
+                                <div class="stat-label">Total</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="solved-problems">0</div>
+                                <div class="stat-label">Solved</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="solved-easy">0</div>
+                                <div class="stat-label">Easy</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="solved-medium">0</div>
+                                <div class="stat-label">Medium</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="solved-hard">0</div>
+                                <div class="stat-label">Hard</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="unique-companies">0</div>
+                                <div class="stat-label">Companies</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="filtered-problems">0</div>
+                                <div class="stat-label">Filtered</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="completion-rate">0%</div>
+                                <div class="stat-label">Complete</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-ring">
+                            <svg>
+                                <circle class="progress-bg" cx="40" cy="40" r="36"/>
+                                <circle class="progress-fill" cx="40" cy="40" r="36"/>
+                            </svg>
+                            <div class="progress-text">0% Complete</div>
+                        </div>
+                    </div>
+                </div>                <div class="content-main">
+                    <div class="content-header">
+                        <div class="result-info">
+                            <span id="filtered-problems">0</span> problems found
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <!-- Mobile Problem Cards -->
+                        <div id="mobile-cards-container" class="mobile-problem-cards">
+                            <!-- Mobile cards will be populated here -->
+                        </div>
+                        
+                        <!-- Desktop Table -->
+                        <table id="problems-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <i class="fas fa-check" title="Solved Status"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="title">
+                                        Title <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>
+                                        Difficulty
+                                    </th>
+                                    <th class="sortable" data-sort="company_count">
+                                        Companies <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="weighted_frequency">
+                                        Frequency <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>Tags</th>
+                                    <th style="min-width: 120px;">Companies</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="problems-tbody">
+                                <!-- Problems will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <button id="prev-page" class="btn-secondary" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        
+                        <div class="pagination-info">
+                            <div class="page-numbers" id="page-numbers">
+                                <!-- Page numbers will be generated here -->
+                            </div>
+                            <div class="page-jump">
+                                <span>Go to page:</span>
+                                <input type="number" id="page-input" min="1" max="1" value="1">
+                                <button id="go-to-page" class="btn-primary">Go</button>
+                            </div>
+                        </div>
+                        
+                        <button id="next-page" class="btn-secondary" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="insights-tab" style="display: none;">
+            <div class="insights-section">
+                <!-- Enhanced Tips Section - Full Width, 2-Column Layout -->
+                <div class="tips-section-enhanced">
+                    <h2><i class="fas fa-lightbulb"></i> Interview Preparation Tips</h2>
+                    <div class="tips-grid">
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <strong>High-Frequency Focus:</strong> Prioritize problems with higher weighted frequency scores for maximum impact
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🏢</div>
+                            <div class="tip-content">
+                                <strong>Company-Specific Prep:</strong> Filter by companies you're interviewing with to practice relevant questions
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🧩</div>
+                            <div class="tip-content">
+                                <strong>Pattern Recognition:</strong> Group problems by tags to identify and master common algorithmic patterns
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📈</div>
+                            <div class="tip-content">
+                                <strong>Progressive Difficulty:</strong> Start with Easy problems, then gradually move to Medium and Hard levels
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⏰</div>
+                            <div class="tip-content">
+                                <strong>Consistency Matters:</strong> Solve at least 2-3 problems daily to maintain coding sharpness
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📊</div>
+                            <div class="tip-content">
+                                <strong>Track Progress:</strong> Use the progress tracker to monitor your improvement over time
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Analytics Section -->
+                <div class="analytics-section">
+                    <div class="analytics-grid">
+                        <div class="analytics-item difficulty-analytics">
+                            <h3><i class="fas fa-chart-pie"></i> Difficulty Distribution</h3>
+                            <canvas id="difficulty-chart"></canvas>
+                        </div>
+
+                        <div class="analytics-item companies-analytics">
+                            <h3><i class="fas fa-building"></i> Top Companies by Problem Count</h3>
+                            <div id="companies-frequency" class="companies-showcase"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <span>Made with ❤️ by Prasoon • Powered by <i class="fas fa-robot"></i> Copilot</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
