@@ -10,7 +10,7 @@ let selectedCompanies = new Set();
 let selectedDifficulties = new Set();
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     loadSolvedProblems();
     await loadProblems();
     initializeEventListeners();
@@ -63,27 +63,27 @@ async function loadProblems() {
 function initializeEventListeners() {
     // Search functionality
     document.getElementById('search').addEventListener('input', debounce(filterProblems, 300));
-    
+
     // Filter controls
     document.getElementById('status-filter').addEventListener('change', filterProblems);
     document.getElementById('company-count-filter').addEventListener('input', updateCompanyCountFilter);
     document.getElementById('frequency-filter').addEventListener('input', updateFrequencyFilter);
-    
+
     // Difficulty buttons
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.addEventListener('click', () => toggleDifficulty(btn.dataset.difficulty));
     });
-    
+
     // Custom multi-select for tags and companies
     setupCustomMultiSelect('tags');
     setupCustomMultiSelect('companies');
-    
+
     // Action buttons
     document.getElementById('clear-filters').addEventListener('click', clearAllFilters);
-    
+
     // Theme toggle
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    
+
     // Pagination
     document.getElementById('prev-page').addEventListener('click', () => changePage(-1));
     document.getElementById('next-page').addEventListener('click', () => changePage(1));
@@ -91,7 +91,7 @@ function initializeEventListeners() {
     document.getElementById('page-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') goToSpecificPage();
     });
-    
+
     // Table sorting
     document.querySelectorAll('.sortable').forEach(header => {
         header.addEventListener('click', () => {
@@ -112,7 +112,7 @@ function initializeTheme() {
 function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
@@ -128,7 +128,7 @@ function updateThemeIcon(theme) {
 function toggleSelectAll() {
     const selectAll = document.getElementById('select-all');
     const checkboxes = document.querySelectorAll('.problem-checkbox');
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.checked = selectAll.checked;
         const problemId = checkbox.dataset.problemId;
@@ -138,7 +138,7 @@ function toggleSelectAll() {
             solvedProblems.delete(problemId);
         }
     });
-    
+
     saveSolvedProblems();
     updateStatistics();
     displayProblems();
@@ -148,6 +148,8 @@ function toggleSelectAll() {
 function initializeFilters() {
     populateCustomMultiSelect('tags');
     populateCustomMultiSelect('companies');
+    updateSelectedDisplay('tags');
+    updateSelectedDisplay('companies');
     updateCompanyCountFilter();
     updateFrequencyFilter();
 }
@@ -155,7 +157,7 @@ function initializeFilters() {
 // Toggle difficulty selection
 function toggleDifficulty(difficulty) {
     const btn = document.querySelector(`[data-difficulty="${difficulty}"]`);
-    
+
     if (selectedDifficulties.has(difficulty)) {
         selectedDifficulties.delete(difficulty);
         btn.classList.remove('active');
@@ -163,7 +165,7 @@ function toggleDifficulty(difficulty) {
         selectedDifficulties.add(difficulty);
         btn.classList.add('active');
     }
-    
+
     filterProblems();
 }
 
@@ -171,8 +173,9 @@ function toggleDifficulty(difficulty) {
 function setupCustomMultiSelect(type) {
     const selectedContainer = document.getElementById(`selected-${type}`);
     const dropdown = document.getElementById(`${type === 'tags' ? 'tag' : 'company'}-dropdown`);
-    
+
     selectedContainer.addEventListener('click', (e) => {
+        // Check if clicking on remove button
         if (e.target.classList.contains('remove')) {
             const value = e.target.parentElement.dataset.value;
             if (type === 'tags') {
@@ -182,70 +185,97 @@ function setupCustomMultiSelect(type) {
             }
             updateSelectedDisplay(type);
             filterProblems();
+
+            // Re-focus input after removal
+            const input = selectedContainer.querySelector('.inline-search-input');
+            if (input) input.focus();
+
             return;
         }
-        
-        dropdown.classList.toggle('show');
-        selectedContainer.classList.toggle('active');
-        
-        // Toggle dropdown-active class on wrapper for z-index elevation
-        const wrapper = selectedContainer.closest('.multi-select-wrapper');
-        if (dropdown.classList.contains('show')) {
-            wrapper.classList.add('dropdown-active');
-            document.body.classList.add('dropdown-open');
-        } else {
-            wrapper.classList.remove('dropdown-active');
-            // Only remove body class if no other dropdowns are open
-            if (!document.querySelector('.dropdown-content.show')) {
-                document.body.classList.remove('dropdown-open');
+
+        // Focus the input if clicking elsewhere in the container
+        const input = selectedContainer.querySelector('.inline-search-input');
+        if (input && e.target !== input) {
+            input.focus();
+        }
+    });
+
+    // Use event delegation for the dynamically created input
+    selectedContainer.addEventListener('input', (e) => {
+        if (e.target.classList.contains('inline-search-input')) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterDropdownItems(type, searchTerm);
+
+            if (!dropdown.classList.contains('show')) {
+                dropdown.classList.add('show');
+                handleDropdownState(selectedContainer, dropdown, true);
             }
         }
     });
-    
+
+    // Handle focus to open dropdown
+    selectedContainer.addEventListener('focusin', (e) => {
+        if (e.target.classList.contains('inline-search-input')) {
+            dropdown.classList.add('show');
+            handleDropdownState(selectedContainer, dropdown, true);
+        }
+    });
+
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!selectedContainer.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
-            selectedContainer.classList.remove('active');
-            
-            // Remove dropdown-active class from wrapper
-            const wrapper = selectedContainer.closest('.multi-select-wrapper');
-            wrapper.classList.remove('dropdown-active');
-            
-            // Only remove body class if no other dropdowns are open
-            if (!document.querySelector('.dropdown-content.show')) {
-                document.body.classList.remove('dropdown-open');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                handleDropdownState(selectedContainer, dropdown, false);
+
+                // Clear input on close
+                const input = selectedContainer.querySelector('.inline-search-input');
+                if (input) {
+                    input.value = '';
+                    filterDropdownItems(type, ''); // Reset
+                }
             }
         }
     });
-    
-    // Mobile-specific: Close dropdown when clicking on the close button area
-    dropdown.addEventListener('click', (e) => {
-        // If clicking in the top area (close button), close the dropdown
-        const rect = dropdown.getBoundingClientRect();
-        const clickY = e.clientY - rect.top;
-        
-        // Check if click is in the top 50px (close button area)
-        if (clickY < 50 && window.innerWidth <= 768) {
-            dropdown.classList.remove('show');
-            selectedContainer.classList.remove('active');
-            
-            const wrapper = selectedContainer.closest('.multi-select-wrapper');
-            wrapper.classList.remove('dropdown-active');
-            
-            if (!document.querySelector('.dropdown-content.show')) {
-                document.body.classList.remove('dropdown-open');
-            }
-            e.stopPropagation();
+}
+
+function handleDropdownState(wrapper, dropdown, isOpen) {
+    const container = wrapper.closest('.multi-select-wrapper');
+    if (isOpen) {
+        container.classList.add('dropdown-active');
+        document.body.classList.add('dropdown-open');
+    } else {
+        container.classList.remove('dropdown-active');
+        if (!document.querySelector('.dropdown-content.show')) {
+            document.body.classList.remove('dropdown-open');
+        }
+    }
+}
+
+// Filter dropdown items
+function filterDropdownItems(type, searchTerm) {
+    const dropdown = document.getElementById(`${type === 'tags' ? 'tag' : 'company'}-dropdown`);
+    const items = dropdown.querySelectorAll('.dropdown-item');
+    let hasVisible = false;
+
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = 'block';
+            hasVisible = true;
+        } else {
+            item.style.display = 'none';
         }
     });
+
+    // Optional: Show "No results" message?
 }
 
 // Populate custom multi-select options
 function populateCustomMultiSelect(type) {
     const dropdown = document.getElementById(`${type === 'tags' ? 'tag' : 'company'}-dropdown`);
     const items = new Set();
-    
+
     allProblems.forEach(problem => {
         if (type === 'tags') {
             problem.tags.forEach(tag => items.add(tag));
@@ -253,7 +283,7 @@ function populateCustomMultiSelect(type) {
             problem.companies.forEach(company => items.add(company));
         }
     });
-    
+
     // Filter out items that don't have any problems
     const filteredItems = Array.from(items).filter(item => {
         return allProblems.some(problem => {
@@ -264,18 +294,23 @@ function populateCustomMultiSelect(type) {
             }
         });
     }).sort();
-    
-    dropdown.innerHTML = filteredItems.map(item => {
+
+    // Create simple list structure
+    dropdown.innerHTML = `
+        <div class="dropdown-list">
+            ${filteredItems.map(item => {
         const displayName = type === 'companies' ? formatCompanyName(item) : item;
         return `<div class="dropdown-item" data-value="${item}">${displayName}</div>`;
-    }).join('');
-    
+    }).join('')}
+        </div>
+    `;
+
     // Add click handlers to dropdown items
     dropdown.querySelectorAll('.dropdown-item').forEach(item => {
         item.addEventListener('click', () => {
             const value = item.dataset.value;
             const selectedSet = type === 'tags' ? selectedTags : selectedCompanies;
-            
+
             if (selectedSet.has(value)) {
                 selectedSet.delete(value);
                 item.classList.remove('selected');
@@ -283,9 +318,17 @@ function populateCustomMultiSelect(type) {
                 selectedSet.add(value);
                 item.classList.add('selected');
             }
-            
+
             updateSelectedDisplay(type);
             filterProblems();
+
+            // Re-focus input after selection
+            const input = document.querySelector(`#selected-${type} .inline-search-input`);
+            if (input) {
+                input.value = ''; // Clear search
+                input.focus();
+                filterDropdownItems(type, ''); // Reset filter
+            }
         });
     });
 }
@@ -295,11 +338,14 @@ function updateSelectedDisplay(type) {
     const container = document.getElementById(`selected-${type}`);
     const selectedSet = type === 'tags' ? selectedTags : selectedCompanies;
     const dropdown = document.getElementById(`${type === 'tags' ? 'tag' : 'company'}-dropdown`);
-    
-    if (selectedSet.size === 0) {
-        container.innerHTML = `<span class="placeholder">Select ${type}...</span>`;
-    } else {
-        container.innerHTML = Array.from(selectedSet).map(item => {
+
+    // Preserve current input value if it exists
+    const currentInput = container.querySelector('.inline-search-input');
+    const currentValue = currentInput ? currentInput.value : '';
+
+    let chipsHtml = '';
+    if (selectedSet.size > 0) {
+        chipsHtml = Array.from(selectedSet).map(item => {
             const displayName = type === 'companies' ? formatCompanyName(item) : item;
             const className = type === 'tags' ? 'selected-tag' : 'selected-company';
             return `<span class="${className}" data-value="${item}">
@@ -308,7 +354,11 @@ function updateSelectedDisplay(type) {
             </span>`;
         }).join('');
     }
-    
+
+    const placeholderText = selectedSet.size === 0 ? `Select ${type}...` : 'Add more...';
+    // Always append input
+    container.innerHTML = `${chipsHtml}<input type="text" class="inline-search-input" placeholder="${placeholderText}" value="${currentValue}">`;
+
     // Update dropdown item states
     dropdown.querySelectorAll('.dropdown-item').forEach(item => {
         if (selectedSet.has(item.dataset.value)) {
@@ -324,7 +374,7 @@ function goToSpecificPage() {
     const pageInput = document.getElementById('page-input');
     const pageNumber = parseInt(pageInput.value);
     const totalPages = Math.ceil(filteredProblems.length / problemsPerPage);
-    
+
     if (pageNumber >= 1 && pageNumber <= totalPages) {
         currentPage = pageNumber;
         displayProblems();
@@ -357,41 +407,41 @@ function filterProblems() {
     const statusFilter = document.getElementById('status-filter').value;
     const minCompanyCount = parseInt(document.getElementById('company-count-filter').value);
     const minFrequency = parseFloat(document.getElementById('frequency-filter').value);
-    
+
     filteredProblems = allProblems.filter(problem => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             problem.title.toLowerCase().includes(searchTerm) ||
             problem.problem_id.includes(searchTerm);
-        
+
         // Status filter
         const isSolved = solvedProblems.has(problem.problem_id);
-        const matchesStatus = statusFilter === '' || 
+        const matchesStatus = statusFilter === '' ||
             (statusFilter === 'solved' && isSolved) ||
             (statusFilter === 'unsolved' && !isSolved);
-        
+
         // Difficulty filter
-        const matchesDifficulty = selectedDifficulties.size === 0 || 
+        const matchesDifficulty = selectedDifficulties.size === 0 ||
             selectedDifficulties.has(problem.difficulty);
-        
+
         // Company count filter
         const matchesCompanyCount = problem.company_count >= minCompanyCount;
-        
+
         // Frequency filter
         const matchesFrequency = problem.weighted_frequency >= minFrequency;
-        
+
         // Tag filter
-        const matchesTags = selectedTags.size === 0 || 
+        const matchesTags = selectedTags.size === 0 ||
             Array.from(selectedTags).some(tag => problem.tags.includes(tag));
-        
+
         // Company filter
-        const matchesCompanies = selectedCompanies.size === 0 || 
+        const matchesCompanies = selectedCompanies.size === 0 ||
             Array.from(selectedCompanies).some(company => problem.companies.includes(company));
-        
-        return matchesSearch && matchesStatus && matchesDifficulty && matchesCompanyCount && 
-               matchesFrequency && matchesTags && matchesCompanies;
+
+        return matchesSearch && matchesStatus && matchesDifficulty && matchesCompanyCount &&
+            matchesFrequency && matchesTags && matchesCompanies;
     });
-    
+
     currentPage = 1;
     displayProblems();
     updateStatistics();
@@ -405,24 +455,24 @@ function sortProblems(column) {
         currentSort.column = column;
         currentSort.direction = 'desc';
     }
-    
+
     filteredProblems.sort((a, b) => {
         let aVal = a[column];
         let bVal = b[column];
-        
+
         // Handle different data types
         if (typeof aVal === 'string') {
             aVal = aVal.toLowerCase();
             bVal = bVal.toLowerCase();
         }
-        
+
         if (currentSort.direction === 'asc') {
             return aVal > bVal ? 1 : -1;
         } else {
             return aVal < bVal ? 1 : -1;
         }
     });
-    
+
     updateSortIcons();
     displayProblems();
 }
@@ -432,7 +482,7 @@ function updateSortIcons() {
     document.querySelectorAll('.sortable i').forEach(icon => {
         icon.className = 'fas fa-sort';
     });
-    
+
     const activeHeader = document.querySelector(`[data-sort="${currentSort.column}"] i`);
     if (activeHeader) {
         activeHeader.className = `fas fa-sort-${currentSort.direction === 'asc' ? 'up' : 'down'}`;
@@ -445,17 +495,17 @@ function displayProblems() {
     const startIndex = (currentPage - 1) * problemsPerPage;
     const endIndex = startIndex + problemsPerPage;
     const pageProblems = filteredProblems.slice(startIndex, endIndex);
-    
+
     tbody.innerHTML = '';
-    
+
     pageProblems.forEach(problem => {
         const row = createProblemRow(problem);
         tbody.appendChild(row);
     });
-    
+
     // Also update mobile cards
     displayProblemsAsMobileCards();
-    
+
     updatePagination();
 }
 
@@ -464,21 +514,22 @@ function displayProblemsAsMobileCards() {
     const startIndex = (currentPage - 1) * problemsPerPage;
     const endIndex = startIndex + problemsPerPage;
     const problemsToShow = filteredProblems.slice(startIndex, endIndex);
-    
+
     let mobileCardsContainer = document.getElementById('mobile-cards-container');
     if (!mobileCardsContainer) {
         console.error('Mobile cards container not found');
         return;
     }
-    
+
     mobileCardsContainer.innerHTML = problemsToShow.map(problem => {
         const isSolved = solvedProblems.has(problem.problem_id);
-        const companiesHtml = problem.companies.slice(0, 3).map(company => 
+        const companiesHtml = problem.companies.slice(0, 3).map(company =>
             `<div class="company-logo-item-mobile" title="${formatCompanyName(company)}">
                 <div class="company-logo">
                     <img src="https://logo.clearbit.com/${getDomainFromCompany(company)}" 
                          alt="${formatCompanyName(company)}" 
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         onerror="handleLogoError(this, '${getDomainFromCompany(company)}')"
+                         loading="lazy">
                     <div class="company-fallback" style="display: none;">
                         ${getCompanyInitials(company)}
                     </div>
@@ -487,7 +538,7 @@ function displayProblemsAsMobileCards() {
         ).join(' ');
         const companiesJson = JSON.stringify(problem.companies).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         const titleEscaped = problem.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        const moreCompanies = problem.companies.length > 3 ? 
+        const moreCompanies = problem.companies.length > 3 ?
             `<div class="company-logo-item-mobile company-more" onclick="showAllCompanies('${problem.problem_id}', '${titleEscaped}', '${companiesJson}')" title="Click to see all ${problem.companies.length} companies">
                 <div class="company-logo">
                     <div class="company-fallback" style="display: flex;">
@@ -495,7 +546,7 @@ function displayProblemsAsMobileCards() {
                     </div>
                 </div>
             </div>` : '';
-        
+
         return `
             <div class="problem-card ${isSolved ? 'solved' : ''}">
                 <div class="problem-card-header">
@@ -536,28 +587,29 @@ function displayProblemsAsMobileCards() {
 function createProblemRow(problem) {
     const row = document.createElement('tr');
     const isSolved = solvedProblems.has(problem.problem_id);
-    
+
     if (isSolved) {
         row.classList.add('problem-solved');
     }
-    
+
     // Show only first 3 companies, with expandable option for more
     const visibleCompanies = problem.companies.slice(0, 3);
     const hiddenCompanies = problem.companies.slice(3);
-    
-    let companiesHtml = visibleCompanies.map(company => 
+
+    let companiesHtml = visibleCompanies.map(company =>
         `<div class="company-logo-item" title="${formatCompanyName(company)}">
             <div class="company-logo">
                 <img src="https://logo.clearbit.com/${getDomainFromCompany(company)}" 
                      alt="${formatCompanyName(company)}" 
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                     onerror="handleLogoError(this, '${getDomainFromCompany(company)}')"
+                     loading="lazy">
                 <div class="company-fallback" style="display: none;">
                     ${getCompanyInitials(company)}
                 </div>
             </div>
         </div>`
     ).join(' ');
-    
+
     if (hiddenCompanies.length > 0) {
         const companiesJson = JSON.stringify(problem.companies).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         const titleEscaped = problem.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -570,7 +622,7 @@ function createProblemRow(problem) {
             </div>
         </div>`;
     }
-    
+
     row.innerHTML = `
         <td>
             <input type="checkbox" class="problem-checkbox" 
@@ -606,7 +658,7 @@ function createProblemRow(problem) {
             </a>
         </td>
     `;
-    
+
     return row;
 }
 
@@ -621,39 +673,40 @@ function showAllCompanies(problemId, title, companies) {
             return;
         }
     }
-    
+
     const modal = document.createElement('div');
     modal.className = 'company-modal';
-    
+
     modal.innerHTML = `
         <div class="company-modal-content">
             <button class="company-modal-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
             <h3>All Companies for: ${title.replace(/&quot;/g, '"').replace(/&#39;/g, "'")}</h3>
             <div class="companies-list-modal">
-                ${companies.map(company => 
-                    `<div class="company-logo-item-modal" title="${formatCompanyName(company)}">
+                ${companies.map(company =>
+        `<div class="company-logo-item-modal" title="${formatCompanyName(company)}">
                         <div class="company-logo">
                             <img src="https://logo.clearbit.com/${getDomainFromCompany(company)}" 
                                  alt="${formatCompanyName(company)}" 
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                 onerror="handleLogoError(this, '${getDomainFromCompany(company)}')"
+                                 loading="lazy">
                             <div class="company-fallback" style="display: none;">
                                 ${getCompanyInitials(company)}
                             </div>
                         </div>
                         <span class="company-name">${formatCompanyName(company)}</span>
                     </div>`
-                ).join('')}
+    ).join('')}
             </div>
         </div>
     `;
-    
+
     // Close modal when clicking outside
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.remove();
         }
     });
-    
+
     document.body.appendChild(modal);
 }
 
@@ -668,29 +721,29 @@ function showAllTags(problemId, title, tags) {
             return;
         }
     }
-    
+
     const modal = document.createElement('div');
     modal.className = 'company-modal'; // Reuse the same modal styling
-    
+
     modal.innerHTML = `
         <div class="company-modal-content">
             <button class="company-modal-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
             <h3>All Tags for: ${title.replace(/&quot;/g, '"').replace(/&#39;/g, "'")}</h3>
             <div class="companies-list">
-                ${tags.map(tag => 
-                    `<span class="tag">${tag}</span>`
-                ).join(' ')}
+                ${tags.map(tag =>
+        `<span class="tag">${tag}</span>`
+    ).join(' ')}
             </div>
         </div>
     `;
-    
+
     // Close modal when clicking outside
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.remove();
         }
     });
-    
+
     document.body.appendChild(modal);
 }
 
@@ -702,15 +755,15 @@ window.toggleProblemSolved = toggleProblemSolved;
 // Update pagination controls
 function updatePagination() {
     const totalPages = Math.ceil(filteredProblems.length / problemsPerPage);
-    
+
     document.getElementById('prev-page').disabled = currentPage === 1;
     document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
-    
+
     // Update page input
     const pageInput = document.getElementById('page-input');
     pageInput.max = totalPages;
     pageInput.value = currentPage;
-    
+
     // Generate page numbers
     generatePageNumbers(totalPages);
 }
@@ -719,17 +772,17 @@ function updatePagination() {
 function generatePageNumbers(totalPages) {
     const pageNumbers = document.getElementById('page-numbers');
     pageNumbers.innerHTML = '';
-    
+
     if (totalPages <= 1) return;
-    
+
     const maxVisible = 7;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
     let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-    
+
     if (endPage - startPage < maxVisible - 1) {
         startPage = Math.max(1, endPage - maxVisible + 1);
     }
-    
+
     // First page
     if (startPage > 1) {
         addPageButton(1);
@@ -737,12 +790,12 @@ function generatePageNumbers(totalPages) {
             addEllipsis();
         }
     }
-    
+
     // Visible pages
     for (let i = startPage; i <= endPage; i++) {
         addPageButton(i);
     }
-    
+
     // Last page
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
@@ -777,7 +830,7 @@ function addEllipsis() {
 function changePage(direction) {
     const totalPages = Math.ceil(filteredProblems.length / problemsPerPage);
     const newPage = currentPage + direction;
-    
+
     if (newPage >= 1 && newPage <= totalPages) {
         currentPage = newPage;
         displayProblems();
@@ -790,21 +843,21 @@ function updateStatistics() {
     const totalProblems = allProblems.length;
     const uniqueCompanies = new Set();
     allProblems.forEach(p => p.companies.forEach(c => uniqueCompanies.add(c)));
-    
+
     const totalSolved = solvedProblems.size;
-    const solvedEasy = allProblems.filter(p => 
+    const solvedEasy = allProblems.filter(p =>
         solvedProblems.has(p.problem_id) && p.difficulty === 'Easy'
     ).length;
-    const solvedMedium = allProblems.filter(p => 
+    const solvedMedium = allProblems.filter(p =>
         solvedProblems.has(p.problem_id) && p.difficulty === 'Medium'
     ).length;
-    const solvedHard = allProblems.filter(p => 
+    const solvedHard = allProblems.filter(p =>
         solvedProblems.has(p.problem_id) && p.difficulty === 'Hard'
     ).length;
-    
-    const completionRate = totalProblems > 0 ? 
+
+    const completionRate = totalProblems > 0 ?
         ((totalSolved / totalProblems) * 100).toFixed(1) : 0;
-    
+
     // Update all statistics
     document.getElementById('total-problems').textContent = totalProblems.toLocaleString();
     document.getElementById('solved-problems').textContent = totalSolved.toLocaleString();
@@ -814,7 +867,7 @@ function updateStatistics() {
     document.getElementById('unique-companies').textContent = uniqueCompanies.size;
     document.getElementById('filtered-problems').textContent = filteredProblems.length.toLocaleString();
     document.getElementById('completion-rate').textContent = `${completionRate}%`;
-    
+
     // Update progress ring
     updateProgressRing(completionRate);
 }
@@ -822,12 +875,12 @@ function updateStatistics() {
 function updateProgressRing(percentage) {
     const circle = document.querySelector('.progress-fill');
     const text = document.querySelector('.progress-text');
-    
+
     if (circle && text) {
         const radius = 36; // Based on the 80px SVG with stroke-width 8
         const circumference = 2 * Math.PI * radius;
         const offset = circumference - (percentage / 100) * circumference;
-        
+
         circle.style.strokeDasharray = circumference;
         circle.style.strokeDashoffset = offset;
         text.textContent = `${percentage}% Complete`;
@@ -840,19 +893,19 @@ function clearAllFilters() {
     document.getElementById('status-filter').value = '';
     document.getElementById('company-count-filter').value = 1;
     document.getElementById('frequency-filter').value = 0;
-    
+
     // Clear difficulty buttons
     selectedDifficulties.clear();
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Clear tags and companies
     selectedTags.clear();
     selectedCompanies.clear();
     updateSelectedDisplay('tags');
     updateSelectedDisplay('companies');
-    
+
     updateCompanyCountFilter();
     updateFrequencyFilter();
     filterProblems();
@@ -863,12 +916,12 @@ function exportFilteredData() {
     const dataStr = JSON.stringify(filteredProblems, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `filtered_leetcode_problems_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
-    
+
     URL.revokeObjectURL(url);
 }
 
@@ -889,13 +942,13 @@ function switchTab(tabName) {
         tab.classList.remove('active');
     });
     document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    
+
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(content => {
         content.style.display = 'none';
     });
     document.getElementById(`${tabName}-tab`).style.display = 'block';
-    
+
     // Load tab-specific content
     if (tabName === 'insights') {
         loadStatisticsCharts();
@@ -912,11 +965,11 @@ function loadStatisticsCharts() {
 function loadDifficultyChart() {
     const ctx = document.getElementById('difficulty-chart').getContext('2d');
     const difficulties = { Easy: 0, Medium: 0, Hard: 0 };
-    
+
     allProblems.forEach(problem => {
         difficulties[problem.difficulty]++;
     });
-    
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -942,17 +995,17 @@ function loadDifficultyChart() {
 // Load tags frequency
 function loadTagsFrequency() {
     const tagsCount = {};
-    
+
     allProblems.forEach(problem => {
         problem.tags.forEach(tag => {
             tagsCount[tag] = (tagsCount[tag] || 0) + 1;
         });
     });
-    
+
     const sortedTags = Object.entries(tagsCount)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 15);
-    
+
     const container = document.getElementById('tags-frequency');
     container.innerHTML = sortedTags.map(([tag, count]) => `
         <div class="frequency-item">
@@ -965,17 +1018,17 @@ function loadTagsFrequency() {
 // Load companies frequency with logos
 function loadCompaniesFrequency() {
     const companiesCount = {};
-    
+
     allProblems.forEach(problem => {
         problem.companies.forEach(company => {
             companiesCount[company] = (companiesCount[company] || 0) + 1;
         });
     });
-    
+
     const sortedCompanies = Object.entries(companiesCount)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 12);
-    
+
     const container = document.getElementById('companies-frequency');
     container.innerHTML = sortedCompanies.map(([company, count]) => {
         const companyName = formatCompanyName(company);
@@ -984,7 +1037,9 @@ function loadCompaniesFrequency() {
             <div class="company-frequency-item">
                 <div class="company-info">
                     <div class="company-logo">
-                        <img src="${logoUrl}" alt="${companyName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="${logoUrl}" alt="${companyName}" 
+                             onerror="handleLogoError(this, '${getDomainFromCompany(company)}')"
+                             loading="lazy">
                         <div class="company-fallback" style="display: none;">
                             ${companyName.charAt(0)}
                         </div>
@@ -1038,7 +1093,7 @@ function getCompanyLogo(company) {
         'robinhood': 'https://logo.clearbit.com/robinhood.com',
         'coinbase': 'https://logo.clearbit.com/coinbase.com'
     };
-    
+
     const normalizedCompany = company.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
     return logoMap[normalizedCompany] || `https://logo.clearbit.com/${normalizedCompany}.com`;
 }
@@ -1047,13 +1102,13 @@ function getCompanyLogo(company) {
 function loadCompanyDistributionChart() {
     const ctx = document.getElementById('company-distribution-chart').getContext('2d');
     const distribution = {};
-    
+
     allProblems.forEach(problem => {
         const count = problem.company_count;
         const range = count <= 5 ? '1-5' : count <= 10 ? '6-10' : count <= 20 ? '11-20' : '20+';
         distribution[range] = (distribution[range] || 0) + 1;
     });
-    
+
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -1084,7 +1139,7 @@ function loadCompanyDistributionChart() {
 
 // Utility functions
 function formatCompanyName(company) {
-    return company.split('-').map(word => 
+    return company.split('-').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
 }
@@ -1140,10 +1195,57 @@ function getDomainFromCompany(company) {
         'visa': 'visa.com',
         'mastercard': 'mastercard.com',
         'blackrock': 'blackrock.com',
-        'citadel': 'citadel.com'
+        'citadel': 'citadel.com',
+        // Additional corrections based on data
+        'palantir-technologies': 'palantir.com',
+        'two-sigma': 'twosigma.com',
+        'akuna-capital': 'akunacapital.com',
+        'hudson-river-trading': 'hudsonrivertrading.com',
+        'jane-street': 'janestreet.com',
+        'worldquant': 'worldquant.com',
+        'tripadvisor': 'tripadvisor.com',
+        'expedia': 'expediagroup.com',
+        'booking': 'booking.com',
+        'nutanix': 'nutanix.com',
+        'rubrik': 'rubrik.com',
+        'dropbox': 'dropbox.com',
+        'box': 'box.com',
+        'palo-alto-networks': 'paloaltonetworks.com',
+        'pure-storage': 'purestorage.com',
+        'qualcomm': 'qualcomm.com',
+        'broadcom': 'broadcom.com',
+        'juniper-networks': 'juniper.net'
     };
-    
-    return companyDomains[company] || `${company}.com`;
+
+    // Check if we have an explicit mapping
+    if (companyDomains[company]) {
+        return companyDomains[company];
+    }
+
+    // Otherwise, normalize and guess
+    // Remove dashes and append .com as a default strategy
+    const normalized = company.replace(/-/g, '');
+    return `${normalized}.com`;
+}
+
+// Handle logo loading errors with fallbacks
+function handleLogoError(img, domain) {
+    const currentSrc = img.src;
+    const googleFavicon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
+    // If the image is currently trying to load from Clearbit and failed
+    if (currentSrc.includes('logo.clearbit.com')) {
+        // Try Google Favicon service as a fallback
+        img.src = googleFavicon;
+    }
+    // If it already failed with Google Favicon (or was trying to use it)
+    else {
+        // Hide image and show fallback initials
+        img.style.display = 'none';
+        if (img.nextElementSibling && img.nextElementSibling.classList.contains('company-fallback')) {
+            img.nextElementSibling.style.display = 'flex';
+        }
+    }
 }
 
 function getCompanyInitials(company) {
@@ -1182,9 +1284,9 @@ function showError(message) {
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     `;
     errorDiv.textContent = message;
-    
+
     document.body.appendChild(errorDiv);
-    
+
     setTimeout(() => {
         errorDiv.remove();
     }, 5000);

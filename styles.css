@@ -154,12 +154,12 @@ body {
         padding: 2rem 0;
         margin: -1.25rem -1.25rem 2rem -1.25rem;
     }
-    
+
     .header-controls {
         top: 1.5rem;
         right: 1.5rem;
     }
-    
+
     .theme-toggle {
         padding: 0.75rem 1rem;
     }
@@ -218,12 +218,12 @@ body {
         padding: 0.5rem;
         margin-bottom: 2rem;
     }
-    
+
     .nav-tab {
         padding: 1rem 1.5rem;
         font-size: 1rem;
     }
-    
+
     .nav-tab i {
         margin-right: 0.625rem;
         font-size: 1.1rem;
@@ -236,13 +236,13 @@ body {
         padding: 6px;
         margin-bottom: 20px;
     }
-    
+
     .nav-tab {
         padding: 12px 20px;
         font-size: 0.9rem;
         font-weight: 700;
     }
-    
+
     .nav-tab i {
         margin-right: 8px;
         font-size: 1rem;
@@ -254,7 +254,7 @@ body {
         padding: 10px 15px;
         font-size: 0.85rem;
     }
-    
+
     .nav-tab i {
         margin-right: 6px;
         font-size: 0.9rem;
@@ -292,7 +292,7 @@ body {
     .main-layout {
         gap: 1.5rem;
     }
-    
+
     .sidebar-left {
         padding: 1.25rem;
     }
@@ -306,13 +306,13 @@ body {
         gap: 2rem;
         align-items: start;
     }
-    
+
     .sidebar-left {
         position: sticky;
         top: 20px;
         order: 0;
     }
-    
+
     .content-main {
         order: 0;
     }
@@ -430,7 +430,7 @@ body {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .sidebar-left {
         position: static;
         max-height: none;
@@ -442,34 +442,34 @@ body {
     .container {
         padding: 10px;
     }
-    
+
     .header {
         margin: -10px -10px 20px -10px;
         padding: 20px 15px;
     }
-    
+
     .header h1 {
         font-size: 1.8rem;
         margin-bottom: 8px;
         text-align: center;
     }
-    
+
     .header h1 i {
         margin-right: 8px;
         font-size: 1.6rem;
     }
-    
+
     .subtitle {
         font-size: 1rem;
         text-align: center;
     }
-    
+
     .header-controls {
         position: static;
         text-align: center;
         margin-top: 15px;
     }
-    
+
     .theme-toggle {
         padding: 10px 12px;
         font-size: 1rem;
@@ -480,13 +480,13 @@ body {
     .header h1 {
         font-size: 1.5rem;
     }
-    
+
     .header h1 i {
         display: block;
         margin: 0 0 5px 0;
         font-size: 1.8rem;
     }
-    
+
     .subtitle {
         font-size: 0.9rem;
     }
@@ -606,6 +606,25 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Remove card styling for multi-selects to avoid box-in-box look */
+.filter-card.no-card-style {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.filter-card.no-card-style:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.filter-card.no-card-style label {
+    margin-bottom: 5px;
+    /* Tighter label spacing since no padding */
+}
+
 .filter-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px var(--shadow-medium);
@@ -664,6 +683,7 @@ body {
     background: var(--border-color);
     outline: none;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .range-container input[type="range"]::-webkit-slider-thumb {
@@ -764,7 +784,8 @@ body {
 #problems-table {
     width: 100%;
     border-collapse: collapse;
-    display: none; /* Hidden on mobile, replaced with cards */
+    display: none;
+    /* Hidden on mobile, replaced with cards */
 }
 
 /* Mobile Card Layout */
@@ -860,12 +881,12 @@ body {
     .mobile-problem-cards {
         display: none;
     }
-    
+
     #problems-table {
         display: table;
         min-width: 800px;
     }
-    
+
     .table-container {
         overflow-x: auto;
         overflow-y: visible;
@@ -1106,9 +1127,19 @@ body {
 }
 
 @keyframes shimmer {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+        opacity: 0;
+    }
 }
 
 .company-logo-item.company-more .company-fallback {
@@ -1386,52 +1417,52 @@ body {
     .company-frequency-item {
         padding: 6px 10px;
     }
-    
+
     .company-logo {
         width: 20px;
         height: 20px;
     }
-    
+
     .company-name {
         font-size: 0.85em;
     }
-    
+
     .company-count {
         font-size: 0.75em;
         padding: 3px 6px;
     }
-    
+
     /* Enhanced mobile statistics */
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-    
+
     .stat-item {
         padding: 8px;
     }
-    
+
     .stat-value {
         font-size: 1rem;
     }
-    
+
     .stat-label {
         font-size: 0.7rem;
     }
-    
+
     .progress-ring {
         width: 80px;
         height: 80px;
         margin: 10px auto;
     }
-    
+
     .progress-ring svg {
         width: 60px;
         height: 60px;
         top: 5px;
         left: 10px;
     }
-    
+
     .progress-text {
         font-size: 0.8rem;
         margin-top: 65px;
@@ -1443,36 +1474,36 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
     }
-    
+
     .stat-item {
         padding: 6px;
     }
-    
+
     .stat-value {
         font-size: 0.9rem;
     }
-    
+
     .stat-label {
         font-size: 0.65rem;
     }
-    
+
     .progress-ring {
         width: 70px;
         height: 70px;
         margin: 8px auto;
     }
-    
+
     .progress-ring svg {
         width: 50px;
         height: 50px;
         top: 5px;
         left: 10px;
     }
-    
+
     .progress-ring circle {
         stroke-width: 6;
     }
-    
+
     .progress-text {
         font-size: 0.75rem;
         margin-top: 55px;
@@ -1730,7 +1761,7 @@ body {
         grid-template-columns: 1fr;
         gap: 25px;
     }
-    
+
     .companies-showcase {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         max-height: 300px;
@@ -1742,58 +1773,58 @@ body {
         grid-template-columns: 1fr;
         gap: 15px;
     }
-    
+
     .tip-item {
         padding: 15px;
     }
-    
+
     .tip-icon {
         width: 35px;
         height: 35px;
         font-size: 1.3rem;
     }
-    
+
     .tip-content {
         font-size: 0.9rem;
     }
-    
+
     .tips-section-enhanced {
         padding: 25px 15px;
         margin-bottom: 20px;
     }
-    
+
     .tips-section-enhanced h2 {
         font-size: 1.6rem;
         margin-bottom: 25px;
     }
-    
+
     .analytics-section {
         padding: 20px 15px;
     }
-    
+
     .analytics-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .analytics-item {
         padding: 15px;
     }
-    
+
     .analytics-item h3 {
         font-size: 1.1rem;
         margin-bottom: 15px;
     }
-    
+
     .difficulty-analytics canvas {
         max-height: 200px !important;
     }
-    
+
     .companies-showcase {
         grid-template-columns: 1fr;
         max-height: 300px;
     }
-    
+
     .companies-showcase .company-frequency-item {
         padding: 10px 12px;
     }
@@ -1803,45 +1834,45 @@ body {
     .tips-section-enhanced {
         padding: 20px 12px;
     }
-    
+
     .tips-section-enhanced h2 {
         font-size: 1.4rem;
         gap: 10px;
     }
-    
+
     .tip-item {
         padding: 12px;
         gap: 12px;
     }
-    
+
     .tip-icon {
         width: 30px;
         height: 30px;
         font-size: 1.1rem;
     }
-    
+
     .tip-content {
         font-size: 0.85rem;
         line-height: 1.5;
     }
-    
+
     .analytics-section {
         padding: 15px 10px;
     }
-    
+
     .analytics-item {
         padding: 12px;
     }
-    
+
     .analytics-item h3 {
         font-size: 1rem;
         margin-bottom: 12px;
     }
-    
+
     .difficulty-analytics canvas {
         max-height: 150px !important;
     }
-    
+
     .companies-showcase {
         max-height: 250px;
         gap: 8px;
@@ -2161,8 +2192,10 @@ body {
 #selected-tags,
 #selected-companies {
     min-height: 38px;
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    /* Thinner border */
+    border-radius: 12px;
+    /* Slightly less rounded to match 'single line' feel */
     padding: 6px 10px;
     background: var(--background-primary);
     cursor: pointer;
@@ -2182,6 +2215,10 @@ body {
 #selected-companies.active {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+    /* Hide bottom border to merge with dropdown */
 }
 
 #tag-dropdown,
@@ -2194,8 +2231,10 @@ body {
     border: 2px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 16px 16px;
-    max-height: 200px;
-    overflow-y: auto;
+    max-height: 300px;
+    /* Increased to match dropdown-content */
+    overflow: hidden;
+    /* Prevent wrapper scrollbar, let dropdown-list handle it */
     z-index: inherit;
     display: none;
     box-shadow: 0 8px 25px var(--shadow-medium);
@@ -2205,15 +2244,19 @@ body {
 #company-dropdown.show {
     display: block;
     z-index: 999;
+    margin-top: -2px;
+    /* Pull up to cover the input's bottom border area for seamless merge */
+    border-color: var(--primary-color);
 }
 
 .selected-items {
     min-height: 38px;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    /* Thinner border */
     border-radius: 8px;
-    padding: 6px 10px;
+    padding: 4px 8px;
     background: var(--background-primary);
-    cursor: pointer;
+    cursor: text;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
@@ -2230,9 +2273,20 @@ body {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.selected-items .placeholder {
-    color: var(--text-muted);
+.inline-search-input {
+    border: none;
+    outline: none;
+    background: transparent;
     font-size: 0.9rem;
+    color: var(--text-primary);
+    flex: 1;
+    min-width: 60px;
+    padding: 4px;
+    font-family: inherit;
+}
+
+.inline-search-input::placeholder {
+    color: var(--text-muted);
 }
 
 .selected-tag,
@@ -2288,16 +2342,18 @@ body {
     border: 2px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 8px 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: inherit;
+    max-height: 300px;
     display: none;
     box-shadow: 0 8px 25px var(--shadow-medium);
+    overflow: hidden;
+    /* Changed from overflow-y: auto to handle internal scrolling */
+    flex-direction: column;
 }
 
 .dropdown-content.show {
-    display: block;
-    z-index: 999; /* Force above everything when shown */
+    display: flex;
+    /* Changed from block to flex */
+    z-index: 999;
 }
 
 /* When dropdown is active, elevate the entire wrapper */
@@ -2307,8 +2363,8 @@ body {
 }
 
 /* When any dropdown is active, lower all other multi-select wrappers */
-.multi-select-wrapper.dropdown-active ~ * .multi-select-wrapper,
-.multi-select-wrapper.dropdown-active + * .multi-select-wrapper {
+.multi-select-wrapper.dropdown-active~* .multi-select-wrapper,
+.multi-select-wrapper.dropdown-active+* .multi-select-wrapper {
     z-index: 50 !important;
 }
 
@@ -2335,6 +2391,15 @@ body.dropdown-open .filter-card:hover {
 body.dropdown-open .filter-card.compact:hover {
     transform: none !important;
     box-shadow: 0 3px 10px var(--shadow-light) !important;
+}
+
+/* Removed internal search bar styles */
+
+.dropdown-list {
+    overflow-y: auto;
+    flex: 1;
+    overscroll-behavior: contain;
+    max-height: 300px;
 }
 
 .dropdown-item {
@@ -2464,82 +2529,83 @@ body.dropdown-open .filter-card.compact:hover {
 
 /* Compact filters on mobile */
 @media (max-width: 768px) {
+
     .filter-row-1,
     .filter-row-2,
     .filter-row-3 {
         grid-template-columns: 1fr;
     }
-    
+
     .sidebar-left {
         padding: 15px;
         border-radius: 8px;
     }
-    
+
     .filters-header h3 {
         font-size: 1rem;
     }
-    
+
     .filter-card.compact {
         padding: 12px;
         margin-bottom: 12px;
     }
-    
+
     .filter-card.compact label {
         font-size: 0.85rem;
         margin-bottom: 6px;
     }
-    
+
     .filter-card.compact input,
     .filter-card.compact select {
         padding: 10px 12px;
         font-size: 0.85rem;
     }
-    
+
     .difficulty-buttons {
         gap: 8px;
     }
-    
+
     .difficulty-btn {
         padding: 10px 8px;
         font-size: 0.8rem;
         font-weight: 700;
     }
-    
+
     .selected-items {
         min-height: 42px;
         padding: 8px 12px;
     }
-    
+
     .selected-tag,
     .selected-company {
         padding: 8px 12px;
         font-size: 0.8rem;
         border-radius: 18px;
     }
-    
+
     .dropdown-content {
         max-height: 180px;
         font-size: 0.85rem;
     }
-    
+
     .dropdown-item {
         padding: 10px 14px;
     }
-    
+
     .pagination {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .pagination-info {
         order: -1;
     }
-    
+
     .page-numbers {
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .page-number {
         padding: 8px 12px;
         font-size: 0.85rem;
@@ -2549,12 +2615,13 @@ body.dropdown-open .filter-card.compact:hover {
 
 /* Mobile-specific dropdown optimizations */
 @media (max-width: 768px) {
+
     /* Ensure dropdowns work properly on mobile */
     .multi-select-wrapper {
         position: relative;
         z-index: 100 !important;
     }
-    
+
     /* Make dropdowns full width and more visible */
     #tag-dropdown,
     #company-dropdown {
@@ -2570,13 +2637,13 @@ body.dropdown-open .filter-card.compact:hover {
         background: var(--background-primary);
         z-index: 1000 !important;
     }
-    
+
     #tag-dropdown.show,
     #company-dropdown.show {
         display: block;
         z-index: 1001 !important;
     }
-    
+
     /* Add a close button overlay for mobile */
     #tag-dropdown::before,
     #company-dropdown::before {
@@ -2591,7 +2658,7 @@ body.dropdown-open .filter-card.compact:hover {
         border-radius: 14px 14px 0 0;
         cursor: pointer;
     }
-    
+
     /* Improve selected items visibility on mobile */
     .selected-tag,
     .selected-company {
@@ -2600,19 +2667,19 @@ body.dropdown-open .filter-card.compact:hover {
         margin: 2px;
         border-radius: 20px;
     }
-    
+
     /* Fix the +5 display issue */
     .selected-items .placeholder {
         font-size: 0.9rem;
         padding: 4px 0;
     }
-    
+
     /* Ensure dropdowns don't get cut off */
     .filters-compact {
         overflow: visible;
         z-index: auto;
     }
-    
+
     .filter-card.compact {
         overflow: visible;
         z-index: auto;

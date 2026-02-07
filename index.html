@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -8,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -41,13 +43,13 @@
                                 <i class="fas fa-times" style="color: #dc3545;"></i>
                             </button>
                         </div>
-                        
+
                         <div class="filters-compact">
                             <div class="filter-card compact">
                                 <label for="search"><i class="fas fa-search"></i> Search</label>
                                 <input type="text" id="search" placeholder="Search problems...">
                             </div>
-                            
+
                             <div class="filter-card compact">
                                 <label for="status-filter"><i class="fas fa-check-circle"></i> Status</label>
                                 <select id="status-filter">
@@ -82,7 +84,7 @@
                                 </div>
                             </div>
 
-                            <div class="filter-card compact">
+                            <div class="filter-card compact no-card-style">
                                 <label><i class="fas fa-tags"></i> Tags</label>
                                 <div class="multi-select-wrapper">
                                     <div class="selected-items" id="selected-tags">
@@ -94,7 +96,7 @@
                                 </div>
                             </div>
 
-                            <div class="filter-card compact">
+                            <div class="filter-card compact no-card-style">
                                 <label><i class="fas fa-briefcase"></i> Companies</label>
                                 <div class="multi-select-wrapper">
                                     <div class="selected-items" id="selected-companies">
@@ -110,7 +112,7 @@
 
                     <div class="compact-stats">
                         <h3><i class="fas fa-chart-bar"></i> Progress</h3>
-                        
+
                         <div class="stats-grid">
                             <div class="stat-item">
                                 <div class="stat-value" id="total-problems">0</div>
@@ -145,16 +147,17 @@
                                 <div class="stat-label">Complete</div>
                             </div>
                         </div>
-                        
+
                         <div class="progress-ring">
                             <svg>
-                                <circle class="progress-bg" cx="40" cy="40" r="36"/>
-                                <circle class="progress-fill" cx="40" cy="40" r="36"/>
+                                <circle class="progress-bg" cx="40" cy="40" r="36" />
+                                <circle class="progress-fill" cx="40" cy="40" r="36" />
                             </svg>
                             <div class="progress-text">0% Complete</div>
                         </div>
                     </div>
-                </div>                <div class="content-main">
+                </div>
+                <div class="content-main">
                     <div class="content-header">
                         <div class="result-info">
                             <span id="filtered-problems">0</span> problems found
@@ -166,7 +169,7 @@
                         <div id="mobile-cards-container" class="mobile-problem-cards">
                             <!-- Mobile cards will be populated here -->
                         </div>
-                        
+
                         <!-- Desktop Table -->
                         <table id="problems-table">
                             <thead>
@@ -201,7 +204,7 @@
                         <button id="prev-page" class="btn-secondary" disabled>
                             <i class="fas fa-chevron-left"></i> Previous
                         </button>
-                        
+
                         <div class="pagination-info">
                             <div class="page-numbers" id="page-numbers">
                                 <!-- Page numbers will be generated here -->
@@ -212,7 +215,7 @@
                                 <button id="go-to-page" class="btn-primary">Go</button>
                             </div>
                         </div>
-                        
+
                         <button id="next-page" class="btn-secondary" disabled>
                             Next <i class="fas fa-chevron-right"></i>
                         </button>
@@ -230,37 +233,43 @@
                         <div class="tip-item">
                             <div class="tip-icon">🎯</div>
                             <div class="tip-content">
-                                <strong>High-Frequency Focus:</strong> Prioritize problems with higher weighted frequency scores for maximum impact
+                                <strong>High-Frequency Focus:</strong> Prioritize problems with higher weighted
+                                frequency scores for maximum impact
                             </div>
                         </div>
                         <div class="tip-item">
                             <div class="tip-icon">🏢</div>
                             <div class="tip-content">
-                                <strong>Company-Specific Prep:</strong> Filter by companies you're interviewing with to practice relevant questions
+                                <strong>Company-Specific Prep:</strong> Filter by companies you're interviewing with to
+                                practice relevant questions
                             </div>
                         </div>
                         <div class="tip-item">
                             <div class="tip-icon">🧩</div>
                             <div class="tip-content">
-                                <strong>Pattern Recognition:</strong> Group problems by tags to identify and master common algorithmic patterns
+                                <strong>Pattern Recognition:</strong> Group problems by tags to identify and master
+                                common algorithmic patterns
                             </div>
                         </div>
                         <div class="tip-item">
                             <div class="tip-icon">📈</div>
                             <div class="tip-content">
-                                <strong>Progressive Difficulty:</strong> Start with Easy problems, then gradually move to Medium and Hard levels
+                                <strong>Progressive Difficulty:</strong> Start with Easy problems, then gradually move
+                                to Medium and Hard levels
                             </div>
                         </div>
                         <div class="tip-item">
                             <div class="tip-icon">⏰</div>
                             <div class="tip-content">
-                                <strong>Consistency Matters:</strong> Solve at least 2-3 problems daily to maintain coding sharpness
+                                <strong>Consistency Matters:</strong> Solve at least 2-3 problems daily to maintain
+                                coding sharpness
                             </div>
                         </div>
                         <div class="tip-item">
                             <div class="tip-icon">📊</div>
                             <div class="tip-content">
-                                <strong>Track Progress:</strong> Use the progress tracker to monitor your improvement over time
+                                <strong>Track Progress:</strong> Use the progress tracker to monitor your improvement
+                                over time
                             </div>
                         </div>
                     </div>
@@ -293,4 +302,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
